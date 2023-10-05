@@ -20,6 +20,7 @@ class FilmDB {
   Future<List<FilmTable>> showAll() async{
     final database = await DatabaseService().database;
     final films = await database.rawQuery("""SELECT * FROM $tableName;""");
+    print(films);
     return films.map((film)=>FilmTable.fromSqflileDatabase(film)).toList();
   }
   Future<List<FilmTable>> find(String search) async{

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:filmography/database/film_db.dart';
 
 class Detail extends StatefulWidget {
   String pageTitle;
@@ -15,6 +16,8 @@ class DetailState extends State<Detail> {
   TextEditingController nameController = TextEditingController();
   TextEditingController yearController = TextEditingController();
   TextEditingController actorController = TextEditingController();
+  final filmDB = FilmDB();
+  String actor = '';
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +27,6 @@ class DetailState extends State<Detail> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(pageTitle),
       ),
       body: Padding(
@@ -67,7 +69,7 @@ class DetailState extends State<Detail> {
                         borderRadius: BorderRadius.circular(5.0))),
               ),
             ),
-            Padding(
+            pageTitle == 'Add' ? Padding(
               padding: EdgeInsets.only(
                 top: 15.0,
                 bottom: 15.0,
@@ -84,7 +86,7 @@ class DetailState extends State<Detail> {
                     border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(5.0))),
               ),
-            ),
+            ) : const SizedBox(),
             Padding(
               padding: EdgeInsets.only(
                 top: 15.0,
@@ -95,7 +97,15 @@ class DetailState extends State<Detail> {
                   Expanded(
                       child: ElevatedButton(
                     style: btnstyle,
-                    onPressed: () {
+                    onPressed: () async {
+                      pageTitle == 'Add' ? actor = actorController.text : actor = pageTitle;
+                      var success = await filmDB.add(name: nameController.text, year: yearController.hashCode, actor: actor);
+                      if(success == 1){
+                        Navigator.pop(context);
+                      }else{
+                        var snackBar = SnackBar(content: Text("save failed"));
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                      }
                       setState(() {
                         debugPrint('save');
                       });
@@ -107,9 +117,10 @@ class DetailState extends State<Detail> {
                       child: ElevatedButton(
                     style: btnstyle,
                     onPressed: () {
-                      setState(() {
-                        debugPrint('delete');
-                      });
+                      Navigator.pop(context);
+                      // setState(() {
+                      //   debugPrint('delete');
+                      // });
                     },
                     child: Text('delete'),
                   )),

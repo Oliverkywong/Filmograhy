@@ -1,3 +1,4 @@
+import 'package:filmography/database/film_db.dart';
 import 'package:flutter/material.dart';
 import 'package:filmography/page/detail.dart';
 
@@ -12,6 +13,21 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   final List<String> actor = <String>['A', 'B', 'C'];
+  // late List<String> actor;
+  final filmDB = FilmDB();
+
+  void fetchAll() {
+    setState(() {
+      // actor = filmDB.showAll() as List<String>;
+      filmDB.showAll();
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    fetchAll();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,13 +35,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title:  Text(widget.title),
         actions: <Widget>[
-          TextButton(
+          IconButton(
+      icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return Detail('Add');
               }));
             },
-            child: const Text('Add'),
             style: TextButton.styleFrom(
               foregroundColor: Colors.white, // Text Color
             ),
@@ -41,12 +57,14 @@ class _MyHomePageState extends State<MyHomePage> {
           //   child: Center(child: Text('${actor[index]}')),
           // );
           return ListTile(
-            title: Text('${actor[index]}'),
+            title: Text(actor[index]),
             onTap: () {
+              // var snackBar = SnackBar(content: Text("Tapped on ${actor[index]}"));
+              // ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-              var snackBar = SnackBar(content: Text("Tapped on ${actor[index]}"));
-              ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
+              Navigator.push(context, MaterialPageRoute(builder: (context) {
+                return Detail(actor[index]);
+              }));
             },
           );
         },
