@@ -1,4 +1,5 @@
 import 'package:filmography/database/film_db.dart';
+import 'package:filmography/models/film.dart';
 import 'package:flutter/material.dart';
 import 'package:filmography/page/detail.dart';
 
@@ -12,14 +13,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
 
-  final List<String> actor = <String>['A', 'B', 'C'];
-  // late List<String> actor;
+  Future<List<FilmTable>>? actor;
   final filmDB = FilmDB();
 
   void fetchAll() {
     setState(() {
-      // actor = filmDB.showAll() as List<String>;
-      filmDB.showAll();
+      actor = filmDB.showActor();
     });
   }
 
@@ -48,27 +47,30 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(8),
-        itemCount: actor.length,
-        itemBuilder: (BuildContext context, int index) {
-          // return Container(
-          //   height: 50,
-          //   child: Center(child: Text('${actor[index]}')),
-          // );
-          return ListTile(
-            title: Text(actor[index]),
-            onTap: () {
-              // var snackBar = SnackBar(content: Text("Tapped on ${actor[index]}"));
-              // ScaffoldMessenger.of(context).showSnackBar(snackBar);
-
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return Detail(actor[index]);
-              }));
-            },
-          );
+      body: FutureBuilder<List<FilmTable>>(
+        future: actor,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+          } else {
+            final film = snapshot.data!;
+            return ListView.separated(
+              padding: const EdgeInsets.all(8),
+              itemCount: film.length,
+              itemBuilder: (BuildContext context, int index) {
+                return ListTile(
+                  title: Text(film[index].actor),
+                  onTap: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return Detail(film[index].name);
+                    }));
+                  },
+                );
+              },
+              separatorBuilder: (BuildContext context, int index) => const Divider(),
+            );
+          }
         },
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
       ),
     );
   }

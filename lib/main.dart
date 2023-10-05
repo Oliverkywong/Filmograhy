@@ -25,14 +25,14 @@ import 'package:filmography/page/films_page.dart';
 
 
 import 'package:filmography/page/home_page.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+// import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite/sqflite.dart';
 
 // void main() => runApp(const AppBarApp());
 
 Future  main() async {
-  sqfliteFfiInit();
-  databaseFactory = databaseFactoryFfi;
+  // sqfliteFfiInit();
+  // databaseFactory = databaseFactoryFfi;
   runApp(MyApp());
 }
 

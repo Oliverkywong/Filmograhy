@@ -99,16 +99,9 @@ class DetailState extends State<Detail> {
                     style: btnstyle,
                     onPressed: () async {
                       pageTitle == 'Add' ? actor = actorController.text : actor = pageTitle;
-                      var success = await filmDB.add(name: nameController.text, year: yearController.hashCode, actor: actor);
-                      if(success == 1){
-                        Navigator.pop(context);
-                      }else{
-                        var snackBar = SnackBar(content: Text("save failed"));
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                      }
-                      setState(() {
-                        debugPrint('save');
-                      });
+                      await filmDB.add(name: nameController.text, year: yearController.hashCode, actor: actor);
+                      // Navigator.pop(context);
+                      Navigator.of(context).pop(true);
                     },
                     child: Text('save'),
                   )),

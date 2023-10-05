@@ -10,16 +10,33 @@ class FilmDB {
     "name" TEXT NOT NULL,
     "year" INTEGER NOT NULL,
     "actor" TEXT NOT NULL,
-    PRIMARY KEY ("id" AUTOINCREMENT);""");
+    PRIMARY KEY ("id" AUTOINCREMENT));""");
   }
   Future<int> add({required String name, required int year, required String actor}) async {
     final database = await DatabaseService().database;
+    print('Insert success');
+    print(database.rawInsert("""INSERT INTO $tableName (name, year, actor) VALUES (?, ? ,?);""",
+        [name, year, actor]));
     return await database.rawInsert("""INSERT INTO $tableName (name, year, actor) VALUES (?, ? ,?);""",
     [name, year, actor]);
   }
   Future<List<FilmTable>> showAll() async{
     final database = await DatabaseService().database;
     final films = await database.rawQuery("""SELECT * FROM $tableName;""");
+    print('show raw, $films');
+    print(films.map((film)=>FilmTable.fromSqflileDatabase(film)).toList());
+    return films.map((film)=>FilmTable.fromSqflileDatabase(film)).toList();
+  }
+  Future<List<FilmTable>> showActor() async{
+    final database = await DatabaseService().database;
+    final films = await database.rawQuery("""SELECT * FROM $tableName GROUP BY actor;""");
+    print('show raw, $films');
+    // print(films.map((film)=>FilmTable.fromSqflileDatabase(film)).toList());
+    return films.map((film)=>FilmTable.fromSqflileDatabase(film)).toList();
+  }
+  Future<List<FilmTable>> showActorFilm(String actor) async{
+    final database = await DatabaseService().database;
+    final films = await database.rawQuery("""SELECT * FROM $tableName WHERE actor = ?;""",[actor]);
     print(films);
     return films.map((film)=>FilmTable.fromSqflileDatabase(film)).toList();
   }
