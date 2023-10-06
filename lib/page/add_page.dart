@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:filmography/database/film_db.dart';
 
-class Detail extends StatefulWidget {
+class AddPage extends StatefulWidget {
   String pageTitle;
-  Detail(this.pageTitle);
+  AddPage(this.pageTitle, {super.key});
   @override
   State<StatefulWidget> createState() {
-    return DetailState(this.pageTitle);
+    return AddPageState(this.pageTitle);
   }
 }
 
-class DetailState extends State<Detail> {
+class AddPageState extends State<AddPage> {
   String pageTitle;
-  DetailState(this.pageTitle);
+  AddPageState(this.pageTitle);
   TextEditingController nameController = TextEditingController();
   TextEditingController yearController = TextEditingController();
   TextEditingController actorController = TextEditingController();
   final filmDB = FilmDB();
-  String actor = '';
 
   @override
   Widget build(BuildContext context) {
@@ -69,24 +68,26 @@ class DetailState extends State<Detail> {
                         borderRadius: BorderRadius.circular(5.0))),
               ),
             ),
-            pageTitle == 'Add' ? Padding(
-              padding: EdgeInsets.only(
-                top: 15.0,
-                bottom: 15.0,
-              ),
-              child: TextField(
-                controller: actorController,
-                style: textStyle,
-                onChanged: (value) {
-                  debugPrint('textactor');
-                },
-                decoration: InputDecoration(
-                    label: Text('actor'),
-                    labelStyle: textStyle,
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(5.0))),
-              ),
-            ) : const SizedBox(),
+            pageTitle == 'Add'
+                ? Padding(
+                    padding: EdgeInsets.only(
+                      top: 15.0,
+                      bottom: 15.0,
+                    ),
+                    child: TextField(
+                      controller: actorController,
+                      style: textStyle,
+                      onChanged: (value) {
+                        debugPrint('textactor');
+                      },
+                      decoration: InputDecoration(
+                          label: Text('actor'),
+                          labelStyle: textStyle,
+                          border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(5.0))),
+                    ),
+                  )
+                : const SizedBox(),
             Padding(
               padding: EdgeInsets.only(
                 top: 15.0,
@@ -98,10 +99,11 @@ class DetailState extends State<Detail> {
                       child: ElevatedButton(
                     style: btnstyle,
                     onPressed: () async {
-                      pageTitle == 'Add' ? actor = actorController.text : actor = pageTitle;
-                      await filmDB.add(name: nameController.text, year: yearController.hashCode, actor: actor);
-                      // Navigator.pop(context);
-                      Navigator.of(context).pop(true);
+                      await filmDB.add(
+                          name: nameController.text,
+                          year: yearController.text,
+                          actor: actorController.text);
+                      Navigator.pop(context);
                     },
                     child: Text('save'),
                   )),
@@ -111,9 +113,6 @@ class DetailState extends State<Detail> {
                     style: btnstyle,
                     onPressed: () {
                       Navigator.pop(context);
-                      // setState(() {
-                      //   debugPrint('delete');
-                      // });
                     },
                     child: Text('delete'),
                   )),

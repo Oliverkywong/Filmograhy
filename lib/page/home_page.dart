@@ -1,7 +1,8 @@
 import 'package:filmography/database/film_db.dart';
 import 'package:filmography/models/film.dart';
+import 'package:filmography/page/films_page.dart';
 import 'package:flutter/material.dart';
-import 'package:filmography/page/detail.dart';
+import 'package:filmography/page/add_page.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
@@ -12,7 +13,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   Future<List<FilmTable>>? actor;
   final filmDB = FilmDB();
 
@@ -32,13 +32,13 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text(widget.title),
+        title: Text(widget.title),
         actions: <Widget>[
           IconButton(
-      icon: const Icon(Icons.add),
+            icon: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return Detail('Add');
+                return AddPage('Add');
               }));
             },
             style: TextButton.styleFrom(
@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
         future: actor,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else {
             final film = snapshot.data!;
             return ListView.separated(
@@ -61,13 +61,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 return ListTile(
                   title: Text(film[index].actor),
                   onTap: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return Detail(film[index].name);
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return FilmsPage(film[index].actor);
                     }));
                   },
                 );
               },
-              separatorBuilder: (BuildContext context, int index) => const Divider(),
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(),
             );
           }
         },

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:filmography/page/detail.dart';
+import 'package:filmography/page/add_page.dart';
 
 class DetailList extends StatefulWidget {
   @override
@@ -22,7 +22,7 @@ class DetailListState extends State<DetailList> {
         onPressed: () {
           debugPrint('flatonclick');
           Navigator.push(context, MaterialPageRoute(builder: (context) {
-            return Detail('Add');
+            return AddPage('Add');
           }));
         },
         tooltip: 'Add data',
@@ -51,7 +51,7 @@ class DetailListState extends State<DetailList> {
               onTap: () {
                 debugPrint('onclick');
                 Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return Detail('Edit');
+                  return AddPage('Edit');
                 }));
               },
             ),
@@ -59,5 +59,3 @@ class DetailListState extends State<DetailList> {
         });
   }
 }
-
-

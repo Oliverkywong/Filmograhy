@@ -1,16 +1,21 @@
 import 'package:filmography/database/film_db.dart';
 import 'package:filmography/models/film.dart';
-import 'package:filmography/page/add_actor.dart';
+import 'package:filmography/page/add_film.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FilmsPage extends StatefulWidget {
-  const FilmsPage({super.key});
+  String pageTitle;
+  FilmsPage(this.pageTitle, {super.key});
   @override
-  State<FilmsPage> createState() => _FilmsPageState();
+  State<StatefulWidget> createState() {
+    return FilmsPageState(this.pageTitle);
+  }
 }
 
-class _FilmsPageState extends State<FilmsPage> {
+class FilmsPageState extends State<FilmsPage> {
+  String pageTitle;
+  FilmsPageState(this.pageTitle);
   Future<List<FilmTable>>? futureFilm;
   final filmDB = FilmDB();
 
@@ -22,14 +27,14 @@ class _FilmsPageState extends State<FilmsPage> {
 
   void fetchAll() {
     setState(() {
-      futureFilm = filmDB.showAll();
+      futureFilm = filmDB.showActorFilm(pageTitle);
     });
   }
 
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(
-          title: const Text('Filmography'),
+          title: Text('$pageTitle Filmography'),
         ),
         body: FutureBuilder<List<FilmTable>>(
           future: futureFilm,
@@ -38,18 +43,38 @@ class _FilmsPageState extends State<FilmsPage> {
               return const Center(child: CircularProgressIndicator());
             } else {
               final film = snapshot.data!;
-              return film.isEmpty
-                  ? const Center(
-                      child: Text('No films..'),
-                    )
-                  : ListView.separated(
-                      itemBuilder: (context, index) {
-                        final fil = film[index];
+              return ListView.separated(
+                  itemBuilder: (context, index) {
+                    final fil = film[index];
+                    return ListTile(
+                      title: Text(fil.name),
+                      subtitle: Text(fil.year),
+                      trailing: IconButton(
+                        onPressed: () async {
+                          await filmDB.delete(fil.id);
+                          fetchAll();
+                        },
+                        icon: const Icon(Icons.delete),
+                      ),
+                      onTap: () {
+                        showDialog(
+                            context: context,
+                            builder: (context) => CreateList(
+                                film: fil,
+                                onSubmit: (list) async {
+                                  await filmDB.update(
+                                      id: fil.id, name: list[0], year: list[1]);
+                                  fetchAll();
+                                  if (!mounted) return;
+                                  Navigator.of(context).pop();
+                                }));
                       },
-                      separatorBuilder: (context, index) => const SizedBox(
-                            height: 12,
-                          ),
-                      itemCount: film.length);
+                    );
+                  },
+                  separatorBuilder: (context, index) => const SizedBox(
+                        height: 12,
+                      ),
+                  itemCount: film.length);
             }
           },
         ),
@@ -58,8 +83,9 @@ class _FilmsPageState extends State<FilmsPage> {
           onPressed: () {
             showDialog(
                 context: context,
-                builder: (_) => CreateList(onSubmit: (name) async {
-                      await filmDB.add(name: name, year: 2000, actor: '');
+                builder: (_) => CreateList(onSubmit: (list) async {
+                      await filmDB.add(
+                          name: list[0], year: list[1], actor: pageTitle);
                       if (!mounted) return;
                       fetchAll();
                       Navigator.of(context).pop();
