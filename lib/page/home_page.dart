@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:filmography/page/add_page.dart';
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -30,9 +29,24 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final TextEditingController searchController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: TextField(
+          controller: searchController,
+          style: const TextStyle(color: Colors.white),
+          cursorColor: Colors.white,
+          decoration: InputDecoration(
+            hintText: 'Search...',
+            hintStyle: TextStyle(color: Colors.white54),
+            border: InputBorder.none,
+          ),
+          onSubmitted: (String value) {
+            setState(() {
+              actor = filmDB.find(value);
+            });
+          },
+        ),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.add),
@@ -40,6 +54,15 @@ class _MyHomePageState extends State<MyHomePage> {
               Navigator.push(context, MaterialPageRoute(builder: (context) {
                 return AddPage('Add');
               }));
+            },
+            style: TextButton.styleFrom(
+              foregroundColor: Colors.white, // Text Color
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () {
+              fetchAll();
             },
             style: TextButton.styleFrom(
               foregroundColor: Colors.white, // Text Color

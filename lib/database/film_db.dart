@@ -23,12 +23,6 @@ class FilmDB {
         [name, year, actor]);
   }
 
-  Future<List<FilmTable>> showAll() async {
-    final database = await DatabaseService().database;
-    final films = await database.rawQuery("""SELECT * FROM $tableName;""");
-    return films.map((film) => FilmTable.fromSqflileDatabase(film)).toList();
-  }
-
   Future<List<FilmTable>> showActor() async {
     final database = await DatabaseService().database;
     final films =
@@ -46,7 +40,8 @@ class FilmDB {
   Future<List<FilmTable>> find(String search) async {
     final database = await DatabaseService().database;
     final films = await database.rawQuery(
-        """SELECT * FROM $tableName WHERE actor LIKE '%?%';""", [search]);
+        """SELECT * FROM $tableName WHERE actor LIKE '%$search%';""");
+    print(films);
     return films.map((film) => FilmTable.fromSqflileDatabase(film)).toList();
   }
 
